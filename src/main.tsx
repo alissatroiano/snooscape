@@ -1,7 +1,5 @@
 import './createPost.js';
-
 import { Devvit, useState, useWebView } from '@devvit/public-api';
-
 import type { DevvitMessage, WebViewMessage } from './message.js';
 
 Devvit.configure({
@@ -11,7 +9,7 @@ Devvit.configure({
 
 // Add a custom post type to Devvit
 Devvit.addCustomPostType({
-  name: 'Web View Example',
+  name: 'Snooscapes',
   height: 'tall',
   render: (context) => {
     // Load username with `useAsync` hook
@@ -19,9 +17,13 @@ Devvit.addCustomPostType({
       return (await context.reddit.getCurrentUsername()) ?? 'anon';
     });
 
-    // Load latest counter from redis with `useAsync` hook
-    const [counter, setCounter] = useState(async () => {
-      const redisCount = await context.redis.get(`counter_${context.postId}`);
+    // const [leaderboardStats] = useState(async () => {
+    //   return await getLeaderboard(context);
+    // });
+
+    // Load latest Score from redis with `useAsync` hook
+    const [score, setScore] = useState(async () => {
+      const redisCount = await context.redis.get(`score_${context.postId}`);
       return Number(redisCount ?? 0);
     });
 
@@ -37,21 +39,21 @@ Devvit.addCustomPostType({
               type: 'initialData',
               data: {
                 username: username,
-                currentCounter: counter,
+                currentScore: score,
               },
             });
             break;
-          case 'setCounter':
+          case 'setScore':
             await context.redis.set(
-              `counter_${context.postId}`,
-              message.data.newCounter.toString()
+              `score_${context.postId}`,
+              message.data.newScore.toString()
             );
-            setCounter(message.data.newCounter);
+            setScore(message.data.newScore);
 
             webView.postMessage({
-              type: 'updateCounter',
+              type: 'updateScore',
               data: {
-                currentCounter: message.data.newCounter,
+                currentScore: message.data.newScore,
               },
             });
             break;
@@ -60,7 +62,7 @@ Devvit.addCustomPostType({
         }
       },
       onUnmount() {
-        context.ui.showToast('Web view closed!');
+        context.ui.showToast('Come back soon!');
       },
     });
 
@@ -69,7 +71,7 @@ Devvit.addCustomPostType({
       <vstack grow padding="small">
         <vstack grow alignment="middle center">
           <text size="xlarge" weight="bold">
-            Example App
+           Snooscapes
           </text>
           <spacer />
           <vstack alignment="start middle">
@@ -81,10 +83,10 @@ Devvit.addCustomPostType({
               </text>
             </hstack>
             <hstack>
-              <text size="medium">Current counter:</text>
+              <text size="medium">Current score:</text>
               <text size="medium" weight="bold">
                 {' '}
-                {counter ?? ''}
+                {score ?? ''}
               </text>
             </hstack>
           </vstack>

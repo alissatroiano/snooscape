@@ -1,33 +1,5 @@
-/** @typedef {import('../src/message.ts').DevvitSystemMessage} DevvitSystemMessage */
-/** @typedef {import('../src/message.ts').WebViewMessage} WebViewMessage */
 
-class App {
-  constructor() {
-    // Get references to the HTML elements
-    this.output = /** @type {HTMLPreElement} */ (document.querySelector('#messageOutput'));
-    this.usernameLabel = /** @type {HTMLSpanElement} */ (document.querySelector('#username'));
-    this.scoreLabel = /** @type {HTMLSpanElement} */ (document.querySelector('#score'));
-    this.score = 0;
-
-    // When the Devvit app sends a message with `postMessage()`, this will be triggered
-    addEventListener('message', this.#onMessage);
-
-    // This event gets called when the web view is loaded
-    addEventListener('load', () => {
-      postWebViewMessage({ type: 'webViewReady' });
-    });
-
-    this.increaseButton.addEventListener('click', () => {
-      // Sends a message to the Devvit app
-      postWebViewMessage({ type: 'setScore', data: { newScore: this.score + 1 } });
-    });
-
-    this.decreaseButton.addEventListener('click', () => {
-      // Sends a message to the Devvit app
-      postWebViewMessage({ type: 'setScore', data: { newScore: this.score - 1 } });
-    });
- 
-  Array.prototype.last = function () {
+Array.prototype.last = function () {
     return this[this.length - 1];
   };
   
@@ -99,10 +71,8 @@ class App {
     phase = "waiting";
     lastTimestamp = undefined;
     sceneOffset = 0;
-    this.score = 0;
+    score = 0;
   
-    scoreElement.innerText = this.score;
-
     introductionElement.style.opacity = 1;
     perfectElement.style.opacity = 0;
     restartButton.style.display = "none";
@@ -581,48 +551,3 @@ class App {
     return Math.sinus(x) * amplitude + sineBaseY;
   }
   
-  /**
-   * @arg {MessageEvent<DevvitSystemMessage>} ev
-   * @return {void}
-   */
-  #onMessage = (ev) => {
-    // Reserved type for messages sent via `context.ui.webView.postMessage`
-    if (ev.data.type !== 'devvit-message') return;
-    const { message } = ev.data.data;
-
-    // Always output full message
-    this.output.replaceChildren(JSON.stringify(message, undefined, 2));
-
-    switch (message.type) {
-      case 'initialData': {
-        // Load initial data
-        const { username, currentScore } = message.data;
-        this.usernameLabel.innerText = username;
-        this.score = currentScore;
-        this.scoreLabel.innerText = `${this.score}`;
-        break;
-      }
-      case 'updateScore': {
-        const { currentScore } = message.data;
-        this.score = currentScore;
-        this.scoreLabel.innerText = `${this.score}`;
-        break;
-      }
-      default:
-        /** to-do: @satisifes {never} */
-        const _ = message;
-        break;
-    }
-  };
-}
-}
-/**
- * Sends a message to the Devvit app.
- * @arg {WebViewMessage} msg
- * @return {void}
- */
-function postWebViewMessage(msg) {
-  parent.postMessage(msg, '*');
-}
-
-new App();

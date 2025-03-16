@@ -10,15 +10,15 @@
     <link rel="stylesheet" href="style.css" />
   </head>
   <body>
-    <h1>This is your page.html</h1>
-    <h3>Your username is <span id="username">Guest</span></h3>
-    <h3>Current counter is at: <span id="counter">0</span></h3>
-    <div class="button-container">
-      <button id="btn-increase">Increase Counter ⬆️</button>
-      <button id="btn-decrease">Decrease Counter ⬇️</button>
+    <div class="container">
+      <div id="score"></div>
+      <canvas id="game" width="250" height="250"></canvas>
+      <div id="introduction">Hold down the mouse to stretch out a stick</div>
+      <div id="perfect">DOUBLE SCORE</div>
+      <button id="restart">RESTART</button>
     </div>
-    <h3>Last message from Devvit blocks:</h3>
-    <pre id="messageOutput"></pre>
     <script type="application/javascript" src="script.js"></script>
+    <script type="application/javascript" src="game.js"></script>
+
   </body>
 </html>
