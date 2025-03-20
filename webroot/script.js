@@ -599,14 +599,13 @@ onMclass App {
         // Load initial data
         const { username, currentScore } = message.data;
         this.usernameLabel.innerText = username;
-        this.score = 0;
-        this.scoreLabel.innerText = `${this.score}`;
+        this.scoreLabel.innerText = `${this.currentScore}`;
         break;
       }
       case 'updateScore': {
-        const { currentScore } = message.data;
-        this.scoreElement.innerText = currentScore;
-        this.scoreLabel.innerText = `${this.score}`;
+        const { newScore } = message.data;
+        this.scoreElement.innerText = newScore;
+        this.scoreLabel.innerText = `${this.newScore}`;
         break;
       }
       default:

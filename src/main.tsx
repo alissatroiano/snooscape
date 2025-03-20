@@ -59,7 +59,7 @@ Devvit.addCustomPostType({
       },
       // Show a toast message when the web view is unmounted
       onUnmount() {
-        context.ui.showToast('Great job! Your score was saved as ' + (`score_${context.postId}`));  
+        context.ui.showToast('Great job! Your score has been saved.');  
       },// Show a toast message when the web view is mounted
     });
 
@@ -81,12 +81,11 @@ Devvit.addCustomPostType({
               <spacer />
               </hstack>
             <hstack>
-              <text size="medium">Score: </text>
+              {/* <text size="medium">Score: </text>
               <text size="medium" weight="bold">
+                {' '}
                 {score ?? ''}
-                {(`score_${context.postId}`)}
-                <spacer size="xsmall" />
-              </text>
+              </text> */}
             </hstack>
           </vstack>
           <spacer />
