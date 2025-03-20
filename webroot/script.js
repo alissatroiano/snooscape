@@ -1,7 +1,7 @@
 /** @typedef {import('../src/message.ts').DevvitSystemMessage} DevvitSystemMessage */
 /** @typedef {import('../src/message.ts').WebViewMessage} WebViewMessage */
 
-class App {
+onMclass App {
   constructor() {
     // Get references to the HTML elements
     this.output = /** @type {HTMLPreElement} */ (document.querySelector('#messageOutput'));
@@ -222,9 +222,10 @@ class App {
           const [nextPlatform, perfectHit] = thePlatformTheStickHits();
           if (nextPlatform) {
             // Increase score
-            score += perfectHit ? 2 : 1;
-            scoreElement.innerText = score;
-  
+            this.score += perfectHit ? 2 : 1;
+            this.scoreElement.innerText = score;
+            postWebViewMessage({ type: 'setScore', data: { newScore: this.score + 1 } });
+
             if (perfectHit) {
               perfectElement.style.opacity = 1;
               setTimeout(() => (perfectElement.style.opacity = 0), 1000);
@@ -598,13 +599,13 @@ class App {
         // Load initial data
         const { username, currentScore } = message.data;
         this.usernameLabel.innerText = username;
-        this.score = currentScore;
+        this.score = 0;
         this.scoreLabel.innerText = `${this.score}`;
         break;
       }
       case 'updateScore': {
         const { currentScore } = message.data;
-        this.score = currentScore;
+        this.scoreElement.innerText = currentScore;
         this.scoreLabel.innerText = `${this.score}`;
         break;
       }

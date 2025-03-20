@@ -1,4 +1,5 @@
 import './createPost.js';
+
 import { Devvit, useState, useWebView } from '@devvit/public-api';
 import type { DevvitMessage, WebViewMessage } from './message.js';
 
@@ -9,22 +10,17 @@ Devvit.configure({
 
 // Add a custom post type to Devvit
 Devvit.addCustomPostType({
-  name: 'Snooscapes',
+  name: 'Earworm',
   height: 'tall',
   render: (context) => {
     // Load username with `useAsync` hook
     const [username] = useState(async () => {
       return (await context.reddit.getCurrentUsername()) ?? 'anon';
     });
-
-    // const [leaderboardStats] = useState(async () => {
-    //   return await getLeaderboard(context);
-    // });
-
-    // Load latest Score from redis with `useAsync` hook
+    // Load latest score from redis with `useAsync` hook
     const [score, setScore] = useState(async () => {
-      const redisCount = await context.redis.get(`score_${context.postId}`);
-      return Number(redisCount ?? 0);
+      const redisScore = await context.redis.get(`score_${context.postId}`);
+      return Number(redisScore ?? '');
     });
 
     const webView = useWebView<WebViewMessage, DevvitMessage>({
@@ -46,24 +42,25 @@ Devvit.addCustomPostType({
           case 'setScore':
             await context.redis.set(
               `score_${context.postId}`,
-              message.data.newScore.toString()
+              message.data.setScore.toString()
             );
-            setScore(message.data.newScore);
+            setScore(message.data.setScore);
 
             webView.postMessage({
               type: 'updateScore',
               data: {
-                currentScore: message.data.newScore,
+                newScore: message.data.setScore,
               },
             });
             break;
-          default:
+            default:
             throw new Error(`Unknown message type: ${message satisfies never}`);
         }
       },
+      // Show a toast message when the web view is unmounted
       onUnmount() {
-        context.ui.showToast('Come back soon!');
-      },
+        context.ui.showToast('Great job! Your score was saved as ' + (`score_${context.postId}`));  
+      },// Show a toast message when the web view is mounted
     });
 
     // Render the custom post type
@@ -71,22 +68,24 @@ Devvit.addCustomPostType({
       <vstack grow padding="small">
         <vstack grow alignment="middle center">
           <text size="xlarge" weight="bold">
-           Snooscapes
+         SnooScapes
           </text>
           <spacer />
           <vstack alignment="start middle">
             <hstack>
-              <text size="medium">Username:</text>
+              <text size="medium">Hi, </text>
               <text size="medium" weight="bold">
                 {' '}
                 {username ?? ''}
               </text>
-            </hstack>
+              <spacer />
+              </hstack>
             <hstack>
-              <text size="medium">Current score:</text>
+              <text size="medium">Score: </text>
               <text size="medium" weight="bold">
-                {' '}
                 {score ?? ''}
+                {(`score_${context.postId}`)}
+                <spacer size="xsmall" />
               </text>
             </hstack>
           </vstack>
