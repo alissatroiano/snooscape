@@ -1,8 +1,19 @@
 /** @typedef {import('../src/message.ts').DevvitSystemMessage} DevvitSystemMessage */
 /** @typedef {import('../src/message.ts').WebViewMessage} WebViewMessage */
 
-onMclass App {
-  constructor() {
+
+const App = () => {
+  const { mount } = useWebView({
+  url: 'page.html',
+   // Handle messages from web view
+   onMessage: (message) => {
+    console.log('Received from web view:', message);
+  },
+  // Handle messages from Devvit app
+  onSystemMessage: (message) => {
+    console.log('Received from Devvit app:', message);
+  },
+});
     // Get references to the HTML elements
     this.output = /** @type {HTMLPreElement} */ (document.querySelector('#messageOutput'));
     this.usernameLabel = /** @type {HTMLSpanElement} */ (document.querySelector('#username'));
@@ -13,8 +24,8 @@ onMclass App {
     addEventListener('message', this.#onMessage);
 
     // This event gets called when the web view is loaded
-    addEventListener('load', () => {
-      postWebViewMessage({ type: 'webViewReady' });
+    addEventListener('load', (event) => {
+      window.parent.postMessage({ type: 'webViewReady' }, '*');
     });
 
     this.increaseButton.addEventListener('click', () => {
@@ -118,7 +129,6 @@ onMclass App {
   
     sticks = [{ x: platforms[0].x + platforms[0].w, length: 0, rotation: 0 }];
   
-  
     heroX = platforms[0].x + platforms[0].w - heroDistanceFromEdge;
     heroY = 0;
   
@@ -189,6 +199,27 @@ onMclass App {
       phase = "turning";
     }
   });
+
+  // Add these touch event listeners alongside the existing mouse events
+window.addEventListener("touchstart", function (event) {
+  if (phase == "waiting") {
+      lastTimestamp = undefined;
+      introductionElement.style.opacity = 0;
+      phase = "stretching";
+      window.requestAnimationFrame(animate);
+  }
+});
+
+window.addEventListener("touchend", function (event) {
+  if (phase == "stretching") {
+      phase = "turning";
+  }
+});
+
+canvas.addEventListener('touchmove', function(event) {
+  event.preventDefault();
+}, { passive: false });
+
   
   window.addEventListener("resize", function (event) {
     canvas.width = window.innerWidth;
@@ -586,10 +617,11 @@ onMclass App {
    * @arg {MessageEvent<DevvitSystemMessage>} ev
    * @return {void}
    */
-  #onMessage = (ev) => {
-    // Reserved type for messages sent via `context.ui.webView.postMessage`
-    if (ev.data.type !== 'devvit-message') return;
+
     const { message } = ev.data.data;
+    #onMessage (message) => {
+      console.log('Received from web view:', message);
+    }
 
     // Always output full message
     this.output.replaceChildren(JSON.stringify(message, undefined, 2));
@@ -614,15 +646,19 @@ onMclass App {
         break;
     }
   };
-}
-}
+
 /**
  * Sends a message to the Devvit app.
  * @arg {WebViewMessage} msg
  * @return {void}
  */
-function postWebViewMessage(msg) {
-  parent.postMessage(msg, '*');
-}
+// app.js
 
+window.parent.postMessage(
+  {
+    type: 'userAction',
+    data: { clicked: true },
+  },
+  '*'
+);
 new App();

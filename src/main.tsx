@@ -80,13 +80,6 @@ Devvit.addCustomPostType({
               </text>
               <spacer />
               </hstack>
-            <hstack>
-              {/* <text size="medium">Score: </text>
-              <text size="medium" weight="bold">
-                {' '}
-                {score ?? ''}
-              </text> */}
-            </hstack>
           </vstack>
           <spacer />
           <button onPress={() => webView.mount()}>Launch App</button>
