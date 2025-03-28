@@ -59,7 +59,7 @@ Devvit.addCustomPostType({
       },
       // Show a toast message when the web view is unmounted
       onUnmount() {
-        context.ui.showToast('Great job! Your score has been saved.');  
+        context.ui.showToast('Great job! Share your score in the comments section');  
       },// Show a toast message when the web view is mounted
     });
 
@@ -71,7 +71,7 @@ Devvit.addCustomPostType({
          SnooScapes
           </text>
           <spacer />
-          <vstack alignment="start middle">
+          <vstack alignment="center">
             <hstack>
               <text size="medium">Hi, </text>
               <text size="medium" weight="bold">
@@ -80,15 +80,24 @@ Devvit.addCustomPostType({
               </text>
               <spacer />
               </hstack>
-            <hstack>
-              {/* <text size="medium">Score: </text>
-              <text size="medium" weight="bold">
-                {' '}
-                {score ?? ''}
-              </text> */}
-            </hstack>
+              </vstack>
+              <spacer />
+              <spacer />
+              <vstack alignment='center'>
+              <hstack  alignment='center'>
+                <text size="small" alignment='center'>Use your mouse or arrow up/down keys to </text>
+              </hstack>
+              <hstack  alignment='center'>
+                <text size="small" alignment='center'> create sticks that help Snoo get to the next platform </text>  
+              </hstack>
+              <hstack  alignment='center'>
+                <text size="small" alignment='center'>Release the mouse or press arrow down when you're ready to drop the stick </text>  
+              </hstack>
           </vstack>
           <spacer />
+          <spacer />
+          <spacer />
+
           <button onPress={() => webView.mount()}>Launch App</button>
         </vstack>
       </vstack>
